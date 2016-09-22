@@ -17,7 +17,7 @@ protocol Middleware {
 
 public struct Request {
     
-    public internal(set) var url: URL
+    public let url: URL
     
     public internal(set) var parameters: [String: String] = [:]
 }
@@ -38,17 +38,26 @@ public final class Router {
     
     public typealias Handler =  (Request, Response, () -> Void) throws -> Void
     
-    var elements: [Element] = []
+    private var elements: [Element] = []
     
     public func register(pattern: String, handlers: @escaping Handler...) {
         elements.append(Element(pattern: pattern, middlewares: handlers.map(MiddlewareGenerator.init)))
     }
     
-    public func open(url: URL) {
+    public func canOpenURL(url: URL) -> Bool {
+        for elem in elements {
+            if elem.match(path: url.path) != nil {
+                return true
+            }
+        }
+        return false
+    }
+    
+    public func open(url: URL, completion: @escaping () -> Void = {}) {
         ElementWalker(elements: ArraySlice(elements),
                       request: Request(url: url),
                       response: Response(),
-                      callback: {}).next()
+                      callback: completion).next()
     }
 }
 

@@ -9,50 +9,39 @@
 import Foundation
 
 
-final class Element {
+struct Element {
     
-    let pattern: String?
-    let regex: RegularExpression?
-    let keys: [String]?
+    let pattern: String
+    private let regex: RegularExpression
+    private let keys: [String]
     
-    let middlewares: [Middleware]
+    private let middlewares: [Middleware]
     
-    init(pattern: String?, middlewares: [Middleware] = [], builder: RegexBuilder = RegexBuilder.shared) {
+    init(pattern: String, middlewares: [Middleware] = [], builder: RegexBuilder = RegexBuilder.shared) {
         self.pattern = pattern
         self.middlewares = middlewares
         (regex, keys) = builder.build(pattern: pattern)
     }
     
+    func match(path: String) -> TextCheckingResult? {
+        return regex.firstMatch(in: path, range: NSRange(location: 0, length: path.utf16.count))
+    }
+    
     func process(request: Request, response: Response, next: @escaping () -> Void) {
-        print(request.parameters)
-        
         guard response.error == nil else {
             next()
             return
         }
         
-        guard let regex = regex else {
-            var request = request
-            request.parameters = [:]
-            walk(request: request, response: response, next: next)
-            return
-        }
-        
         let path = request.url.path
         
-        guard let match = regex.firstMatch(in: path, range: NSRange(location: 0, length: path.utf16.count)) else {
+        guard let match = match(path: path) else {
             next()
             return
         }
         
         var request = request
         request.parameters = makeParameters(path: path, match: match)
-        walk(request: request, response: response, next: next)
-        
-        print(request.parameters)
-    }
-    
-    private func walk(request: Request, response: Response, next: @escaping () -> Void) {
         Walker(middlewares: ArraySlice(middlewares),
                request: request,
                response: response,
@@ -61,14 +50,13 @@ final class Element {
     
     private func makeParameters(path: String, match: TextCheckingResult) -> [String: String] {
         var parameters: [String: String] = [:]
-        for (index, key) in (keys ?? []).enumerated() {
+        for (index, key) in keys.enumerated() {
             if let range = match.rangeAt(index + 1).range(for: path) {
                 parameters[key] = path.substring(with: range)
             }
         }
         return parameters
     }
-    
 }
 
 
@@ -79,15 +67,7 @@ private struct Walker {
     var response: Response
     let callback: () -> Void
     
-    init(middlewares: ArraySlice<Middleware>, request: Request, response: Response, callback: @escaping () -> Void) {
-        self.middlewares = middlewares
-        self.request = request
-        self.response = response
-        self.callback = callback
-    }
-    
     func next() {
-        
         if middlewares.isEmpty {
             callback()
         } else {

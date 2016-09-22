@@ -20,4 +20,8 @@ router.register(pattern: "/test/:id(\\d{4})") { (request, response, next) in
     next()
 }
 
-router.open(url: URL(string: "http://hoge/test/1000")!)
+router.canOpenURL(url: URL(string: "http://hoge/testd/100d")!)
+
+router.open(url: URL(string: "http://hoge/a/test/1000")!) {
+    print("done")
+}

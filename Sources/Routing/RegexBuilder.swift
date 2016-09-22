@@ -29,15 +29,10 @@ final class RegexBuilder {
         }
     }
     
-    func build(pattern: String?) -> (RegularExpression?, [String]?) {
-        guard let pattern = pattern else {
-            return (nil, nil)
-        }
-        
+    func build(pattern: String) -> (RegularExpression, [String]) {
         var regexStr = "^"
         var keys: [String] = []
         var nonKeyIndex = 0
-        
         
         let paths = pattern.components(separatedBy: "/")
         if paths.filter({$0 != ""}).isEmpty {
