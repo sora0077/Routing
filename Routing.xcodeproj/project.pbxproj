@@ -10,6 +10,9 @@
 		D93436961D91620C00DCDFC2 /* Routing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D934368C1D91620C00DCDFC2 /* Routing.framework */; };
 		D934369B1D91620C00DCDFC2 /* RoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D934369A1D91620C00DCDFC2 /* RoutingTests.swift */; };
 		D934369D1D91620C00DCDFC2 /* Routing.h in Headers */ = {isa = PBXBuildFile; fileRef = D934368F1D91620C00DCDFC2 /* Routing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D93436A91D91623F00DCDFC2 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93436A81D91623F00DCDFC2 /* Router.swift */; };
+		D93436AB1D91637900DCDFC2 /* RegexBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93436AA1D91637900DCDFC2 /* RegexBuilder.swift */; };
+		D93436AE1D91793A00DCDFC2 /* Element.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93436AD1D91793A00DCDFC2 /* Element.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +32,10 @@
 		D93436951D91620C00DCDFC2 /* RoutingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoutingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D934369A1D91620C00DCDFC2 /* RoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutingTests.swift; sourceTree = "<group>"; };
 		D934369C1D91620C00DCDFC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D93436A81D91623F00DCDFC2 /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		D93436AA1D91637900DCDFC2 /* RegexBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexBuilder.swift; sourceTree = "<group>"; };
+		D93436AC1D916C7B00DCDFC2 /* Playground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Playground.playground; sourceTree = "<group>"; };
+		D93436AD1D91793A00DCDFC2 /* Element.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Element.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +60,8 @@
 		D93436821D91620C00DCDFC2 = {
 			isa = PBXGroup;
 			children = (
+				D93436AC1D916C7B00DCDFC2 /* Playground.playground */,
+				D93436A61D91621700DCDFC2 /* Sources */,
 				D934368E1D91620C00DCDFC2 /* Routing */,
 				D93436991D91620C00DCDFC2 /* RoutingTests */,
 				D934368D1D91620C00DCDFC2 /* Products */,
@@ -84,6 +93,24 @@
 				D934369C1D91620C00DCDFC2 /* Info.plist */,
 			);
 			path = RoutingTests;
+			sourceTree = "<group>";
+		};
+		D93436A61D91621700DCDFC2 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				D93436A71D91622000DCDFC2 /* Routing */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		D93436A71D91622000DCDFC2 /* Routing */ = {
+			isa = PBXGroup;
+			children = (
+				D93436A81D91623F00DCDFC2 /* Router.swift */,
+				D93436AA1D91637900DCDFC2 /* RegexBuilder.swift */,
+				D93436AD1D91793A00DCDFC2 /* Element.swift */,
+			);
+			path = Routing;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,6 +175,7 @@
 				TargetAttributes = {
 					D934368B1D91620C00DCDFC2 = {
 						CreatedOnToolsVersion = 8.0;
+						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
 					};
 					D93436941D91620C00DCDFC2 = {
@@ -196,6 +224,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D93436A91D91623F00DCDFC2 /* Router.swift in Sources */,
+				D93436AB1D91637900DCDFC2 /* RegexBuilder.swift in Sources */,
+				D93436AE1D91793A00DCDFC2 /* Element.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,6 +351,7 @@
 		D93436A11D91620C00DCDFC2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -331,6 +363,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jp.sora0077.Routing;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -338,6 +371,7 @@
 		D93436A21D91620C00DCDFC2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -356,6 +390,7 @@
 		D93436A41D91620C00DCDFC2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = RoutingTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.sora0077.RoutingTests;
@@ -367,6 +402,7 @@
 		D93436A51D91620C00DCDFC2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = RoutingTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.sora0077.RoutingTests;
@@ -394,6 +430,7 @@
 				D93436A21D91620C00DCDFC2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D93436A31D91620C00DCDFC2 /* Build configuration list for PBXNativeTarget "RoutingTests" */ = {
 			isa = XCConfigurationList;
@@ -402,6 +439,7 @@
 				D93436A51D91620C00DCDFC2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
