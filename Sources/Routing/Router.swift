@@ -9,7 +9,7 @@
 import Foundation
 
 
-protocol Middleware {
+public protocol Middleware {
     
     func handle(request: Request, response: Response, next: @escaping () -> Void) throws
 }
@@ -40,13 +40,21 @@ public final class Router {
     
     private var elements: [Element] = []
     
+    public init() {
+        
+    }
+    
+    public func install(middleware: Middleware..., for pattern: String = "*") {
+        elements.append(Element(pattern: pattern, middlewares: middleware, isHandler: false))
+    }
+    
     public func register(pattern: String, handlers: @escaping Handler...) {
-        elements.append(Element(pattern: pattern, middlewares: handlers.map(MiddlewareGenerator.init)))
+        elements.append(Element(pattern: pattern, middlewares: handlers.map(MiddlewareGenerator.init), isHandler: true))
     }
     
     public func canOpenURL(url: URL) -> Bool {
         for elem in elements {
-            if elem.match(path: url.path) != nil {
+            if elem.isHandler && elem.match(path: url.path) != nil {
                 return true
             }
         }

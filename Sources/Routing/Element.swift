@@ -15,11 +15,14 @@ struct Element {
     private let regex: RegularExpression
     private let keys: [String]
     
+    let isHandler: Bool
+    
     private let middlewares: [Middleware]
     
-    init(pattern: String, middlewares: [Middleware] = [], builder: RegexBuilder = RegexBuilder.shared) {
+    init(pattern: String, middlewares: [Middleware], isHandler: Bool, builder: RegexBuilder = RegexBuilder.shared) {
         self.pattern = pattern
         self.middlewares = middlewares
+        self.isHandler = isHandler
         (regex, keys) = builder.build(pattern: pattern)
     }
     

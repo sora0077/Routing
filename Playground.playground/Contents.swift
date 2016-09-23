@@ -1,16 +1,20 @@
 //: Playground - noun: a place where people can play
 
 import UIKit
-@testable import Routing
+import Routing
 
 
-//let elem = Element(pattern: "/test/:id", middlewares: [])
-//let request = Request(url: URL(string: "http://com/test/100")!, parameters: [:])
-//let response = Response()
-//elem.process(request: request, response: response, next: {})
+struct Logger: Middleware {
+    
+    func handle(request: Request, response: Response, next: @escaping () -> Void) throws {
+        print("log ", request)
+        next()
+    }
+}
 
 
 let router = Router()
+router.install(middleware: Logger())
 router.register(pattern: "/test/:id") { (request, response, next) in
     print(request)
     next()
@@ -20,8 +24,8 @@ router.register(pattern: "/test/:id(\\d{4})") { (request, response, next) in
     next()
 }
 
-router.canOpenURL(url: URL(string: "http://hoge/testd/100d")!)
+router.canOpenURL(url: URL(string: "http://hoge/tdest/100d")!)
 
-router.open(url: URL(string: "http://hoge/a/test/1000")!) {
+router.open(url: URL(string: "http://hoge/test/1000")!) {
     print("done")
 }
