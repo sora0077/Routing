@@ -30,16 +30,16 @@ struct Element {
         return regex.firstMatch(in: path, range: NSRange(location: 0, length: path.utf16.count))
     }
     
-    func process(request: Request, response: Response, next: @escaping () -> Void) {
+    func process(request: Request, response: Response, next: @escaping (Response) -> Void) {
         guard response.error == nil else {
-            next()
+            next(response)
             return
         }
         
         let path = request.url.path
         
         guard let match = match(path: path) else {
-            next()
+            next(response)
             return
         }
         
@@ -47,8 +47,7 @@ struct Element {
         request.parameters = makeParameters(path: path, match: match)
         Walker(middlewares: ArraySlice(middlewares),
                request: request,
-               response: response,
-               callback: next).next()
+               callback: next).next(response: response)
     }
     
     private func makeParameters(path: String, match: TextCheckingResult) -> [String: String] {
@@ -67,19 +66,19 @@ private struct Walker {
     
     let middlewares: ArraySlice<Middleware>
     let request: Request
-    var response: Response
-    let callback: () -> Void
+    let callback: (Response) -> Void
     
-    func next() {
+    func next(response: Response) {
         if middlewares.isEmpty {
-            callback()
+            callback(response)
         } else {
-            var walker = Walker(middlewares: middlewares.dropFirst(), request: request, response: response, callback: callback)
+            let walker = Walker(middlewares: middlewares.dropFirst(), request: request, callback: callback)
             do {
                 try middlewares[middlewares.startIndex].handle(request: request, response: response, next: walker.next)
             } catch {
-                walker.response.error = error
-                walker.next()
+                var response = response
+                response.error = error
+                walker.next(response: response)
             }
         }
     }

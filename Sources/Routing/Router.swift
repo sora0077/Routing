@@ -11,7 +11,7 @@ import Foundation
 
 public protocol Middleware {
     
-    func handle(request: Request, response: Response, next: @escaping () -> Void) throws
+    func handle(request: Request, response: Response, next: @escaping (Response) -> Void) throws
 }
 
 
@@ -20,6 +20,16 @@ public struct Request {
     public let url: URL
     
     public internal(set) var parameters: [String: String] = [:]
+    
+    public private(set) lazy var queryItems: [String: String?] = {
+        let comps = URLComponents(url: self.url, resolvingAgainstBaseURL: true)
+        let items = comps?.queryItems ?? []
+        var mapping: [String: String?] = [:]
+        for item in items {
+            mapping[item.name] = item.value
+        }
+        return mapping
+    }()
 }
 
 extension Request {
@@ -36,7 +46,7 @@ public struct Response {
 
 public final class Router {
     
-    public typealias Handler =  (Request, Response, () -> Void) throws -> Void
+    public typealias Handler =  (Request, Response, (Response) -> Void) throws -> Void
     
     private var elements: [Element] = []
     
@@ -61,11 +71,10 @@ public final class Router {
         return false
     }
     
-    public func open(url: URL, completion: @escaping () -> Void = {}) {
+    public func open(url: URL, completion: @escaping (Response) -> Void = { _ in }) {
         ElementWalker(elements: ArraySlice(elements),
                       request: Request(url: url),
-                      response: Response(),
-                      callback: completion).next()
+                      callback: completion).next(response: Response())
     }
 }
 
@@ -77,7 +86,7 @@ private struct MiddlewareGenerator: Middleware {
         callback = handler
     }
     
-    func handle(request: Request, response: Response, next: @escaping () -> Void) throws {
+    func handle(request: Request, response: Response, next: @escaping (Response) -> Void) throws {
         try callback(request, response, next)
     }
 }
@@ -86,14 +95,13 @@ private struct ElementWalker {
     
     let elements: ArraySlice<Element>
     let request: Request
-    let response: Response
-    let callback: () -> Void
+    let callback: (Response) -> Void
     
-    func next() {
+    func next(response: Response) {
         if elements.isEmpty {
-            callback()
+            callback(response)
         } else {
-            let walker = ElementWalker(elements: elements.dropFirst(), request: request, response: response, callback: callback)
+            let walker = ElementWalker(elements: elements.dropFirst(), request: request, callback: callback)
             elements[elements.startIndex].process(request: request, response: response, next: walker.next)
         }
     }
