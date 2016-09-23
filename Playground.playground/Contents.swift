@@ -2,6 +2,9 @@
 
 import UIKit
 import Routing
+import PlaygroundSupport
+
+PlaygroundPage.current.needsIndefiniteExecution = true
 
 
 struct Logger: Middleware {
@@ -30,12 +33,14 @@ struct AnotherMiddleware: Middleware {
     }
 }
 
-
 let router = Router()
 router.install(middleware: Logger(), AnotherMiddleware())
 router.register(pattern: "/test/:id") { (request, response, next) in
     print(request)
-    next(response)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        next(response)
+    }
+    
 }
 router.register(pattern: "/test/:id(\\d{4})") { (request, response, next) in
     print("2", request)
@@ -44,6 +49,6 @@ router.register(pattern: "/test/:id(\\d{4})") { (request, response, next) in
 
 router.canOpenURL(url: URL(string: "http://hoge/tdest/100d")!)
 
-router.open(url: URL(string: "http://hoge/test/1000")!) { _ in
-    print("done")
+router.open(url: URL(string: "http://hoge/test/1000")!) { res in
+    print("done", res)
 }

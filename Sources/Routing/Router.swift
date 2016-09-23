@@ -56,7 +56,7 @@ public struct Response {
 
 public final class Router {
     
-    public typealias Handler =  (Request, Response, (Response) -> Void) throws -> Void
+    public typealias Handler =  (Request, Response, @escaping (Response) -> Void) throws -> Void
     
     private var elements: [Element] = []
     
