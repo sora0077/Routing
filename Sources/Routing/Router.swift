@@ -42,6 +42,16 @@ extension Request {
 public struct Response {
     
     public internal(set) var error: Error?
+    
+    private var closingClosures: [() -> Void] = []
+    
+    public mutating func closing(_ closure: @escaping () -> Void) {
+        closingClosures.append(closure)
+    }
+    
+    fileprivate func fireClosing() {
+        closingClosures.reversed().forEach { $0() }
+    }
 }
 
 public final class Router {
@@ -71,10 +81,14 @@ public final class Router {
         return false
     }
     
-    public func open(url: URL, completion: @escaping (Response) -> Void = { _ in }) {
+    public func open(url: URL, completion: ((Response) -> Void)? = nil) {
+        let closure: (Response) -> Void = { res in
+            completion?(res)
+            res.fireClosing()
+        }
         ElementWalker(elements: ArraySlice(elements),
                       request: Request(url: url),
-                      callback: completion).next(response: Response())
+                      callback: closure).next(response: Response())
     }
 }
 
