@@ -42,12 +42,12 @@ router.register(pattern: "/test/:id") { (request, response, next) in
     }
     
 }
-router.register(pattern: "/test/:id(\\d{4})") { (request, response, next) in
+router.register(pattern: "/test/:id([0-9]+)") { (request, response, next) in
     print("2", request)
     next(response)
 }
 
-router.canOpenURL(url: URL(string: "http://hoge/tdest/100d")!)
+router.canOpenURL(url: URL(string: "http://hoge/test/100")!)
 
 router.open(url: URL(string: "http://hoge/test/1000")!) { res in
     print("done", res)

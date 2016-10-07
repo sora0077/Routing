@@ -12,6 +12,7 @@ import Foundation
 struct Element {
     
     let pattern: String
+    private let queue: DispatchQueue?
     private let regex: RegularExpression
     private let keys: [String]
     
@@ -19,8 +20,9 @@ struct Element {
     
     private let middlewares: [Middleware]
     
-    init(pattern: String, middlewares: [Middleware], isHandler: Bool, builder: RegexBuilder = RegexBuilder.shared) {
+    init(pattern: String, queue: DispatchQueue?, middlewares: [Middleware], isHandler: Bool, builder: RegexBuilder = RegexBuilder.shared) {
         self.pattern = pattern
+        self.queue = queue
         self.middlewares = middlewares
         self.isHandler = isHandler
         (regex, keys) = builder.build(pattern: pattern)
@@ -31,23 +33,32 @@ struct Element {
     }
     
     func process(request: Request, response: Response, next: @escaping (Response) -> Void) {
-        guard response.error == nil else {
-            next(response)
-            return
+        
+        func execute() {
+            guard response.error == nil else {
+                next(response)
+                return
+            }
+            
+            let path = request.url.path
+            
+            guard let match = match(path: path) else {
+                next(response)
+                return
+            }
+            
+            var request = request
+            request.parameters = makeParameters(path: path, match: match)
+            Walker(middlewares: ArraySlice(middlewares),
+                   request: request,
+                   callback: next).next(response: response)
         }
         
-        let path = request.url.path
-        
-        guard let match = match(path: path) else {
-            next(response)
-            return
+        if let queue = queue {
+            queue.async(execute: execute)
+        } else {
+            execute()
         }
-        
-        var request = request
-        request.parameters = makeParameters(path: path, match: match)
-        Walker(middlewares: ArraySlice(middlewares),
-               request: request,
-               callback: next).next(response: response)
     }
     
     private func makeParameters(path: String, match: TextCheckingResult) -> [String: String] {

@@ -64,12 +64,12 @@ public final class Router {
         
     }
     
-    public func install(middleware: Middleware..., for pattern: String = "*") {
-        elements.append(Element(pattern: pattern, middlewares: middleware, isHandler: false))
+    public func install(queue: DispatchQueue? = nil, middleware: Middleware..., for pattern: String = "*") {
+        elements.append(Element(pattern: pattern, queue: queue, middlewares: middleware, isHandler: false))
     }
     
-    public func register(pattern: String, handlers: @escaping Handler...) {
-        elements.append(Element(pattern: pattern, middlewares: handlers.map(MiddlewareGenerator.init), isHandler: true))
+    public func register(pattern: String, queue: DispatchQueue? = nil, handlers: @escaping Handler...) {
+        elements.append(Element(pattern: pattern, queue: queue, middlewares: handlers.map(MiddlewareGenerator.init), isHandler: true))
     }
     
     public func canOpenURL(url: URL) -> Bool {
